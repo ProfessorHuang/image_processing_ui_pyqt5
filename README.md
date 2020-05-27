@@ -1,6 +1,9 @@
 # image_processing__ui_pyqt5  
 Image processing UI implemented by PyQt5. The program implements some traditional image processing algorithms including threshold, convolution, morphological algorithms.
 
+### MainWindow:
+The mainwindow having several buttons. You can enter the corresponding sub-window by clicking the corresponding button.
+
 ### ChildWindow1: Histogram and threshold:  
 Requirements：  
   • Program to realize Histogram analysis and threshold operation  

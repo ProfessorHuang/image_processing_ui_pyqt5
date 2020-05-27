@@ -1,5 +1,5 @@
 # image_processing__ui_pyqt5  
-Image processing UI implemented by PyQt5. The program implements some traditional image processing algorithms including threshold, convolution, marphological algorithms.
+Image processing UI implemented by PyQt5. The program implements some traditional image processing algorithms including threshold, convolution, morphological algorithms.
 
 ### ChildWindow1: Histogram and threshold:  
 Requirement：  
@@ -14,24 +14,24 @@ Requirement：
    • Gaussian filter and Median filter  
    • The edge detection and noise reduction  
     
-### ChildWindow3:Basic Binary Marphological Algorithm  
+### ChildWindow3:Basic Binary Morphological Algorithm  
 Requirement:  
     • Realize binary dilation, erosion,opening and closing operations.  
     • Try to apply fast operations in case  
     
-### ChildWindow4:Advanced Binary Marphological Algorithm  
+### ChildWindow4:Advanced Binary Morphological Algorithm  
 Requirement:  
     • Morphological distance transform  
     • Morphological skeleton  
     • Morphological skeleton restoration  
     • Try to apply fast operations in case  
     
-### ChildWindow5:Basic Greyscale Marphological Algorithm  
+### ChildWindow5:Basic Greyscale Morphological Algorithm  
 Requirement:  
     • Realize dilation, erosion, opening and closing operations in grayscale.  
     • Try to apply fast operations in case  
     
-### ChildWindow6:Advanced Greyscale Marphological Algorithm  
+### ChildWindow6:Advanced Greyscale Morphological Algorithm  
 Requirement:  
     • Morphological edge detection  
     • Morphological Reconstruction  

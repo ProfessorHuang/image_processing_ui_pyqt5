@@ -1,4 +1,4 @@
-# image_processing__ui_pyqt5  
+# image_processing_ui_pyqt5  
 Image processing UI implemented by PyQt5. The program implements some traditional image processing algorithms including threshold, convolution, morphological algorithms.
 
 ### MainWindow:

@@ -3,6 +3,10 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton,QHBoxLayout, QVBoxLayout, QWidget
 import project1
 import project2
+import project3
+import project4
+import project5
+import project6
 
 
 class mainWindow(QMainWindow):
@@ -86,28 +90,32 @@ class mainWindow(QMainWindow):
         self.sig_3.emit()
 
     def sig_3_slot(self):
-        pass
+        self.t = project3.mainWindow()
+        self.t.show()
 
 
     def slot_btn_4(self):
         self.sig_4.emit()
         
     def sig_4_slot(self):
-        pass
+        self.t = project4.mainWindow()
+        self.t.show()
 
 
     def slot_btn_5(self):
         self.sig_5.emit()
         
     def sig_5_slot(self):
-        pass
+        self.t = project5.mainWindow()
+        self.t.show()
 
 
     def slot_btn_6(self):
         self.sig_6.emit()
         
     def sig_6_slot(self):
-        pass
+        self.t = project6.mainWindow()
+        self.t.show()
 
 def ui_main():
     app = QApplication(sys.argv)

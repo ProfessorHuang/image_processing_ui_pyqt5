@@ -86,7 +86,8 @@ class mainWindow(QMainWindow):
             self.distance_transform()
         elif self.opt.currentText() == 'skeleton':
             self.skeleton()
-        # elif self.opt.currentText() == 'skeleton restoration':
+        elif self.opt.currentText() == 'skeleton restoration':
+            self.skeleton_restoration()
 
     def distance_transform(self):
         if self.distanceType.currentText() == 'euclidean':
@@ -114,9 +115,9 @@ class mainWindow(QMainWindow):
             substracted = cv2.subtract(image,opened)
             skeleton = cv2.bitwise_or(skeleton,substracted)
             image = eroded.copy()
-            num_zeros = np.size(self.img) - cv2.countNonZero(image)
-            if num_zeros == np.size(self.img):
+            if cv2.countNonZero(image) == 0:
                 stop_flag = True
+        self.sk = skeleton
         cv2.imwrite('./image_to_show/skeleton.jpg', skeleton)
         pixmap_sk = QPixmap('./image_to_show/skeleton.jpg')
         self.processed.setPixmap(pixmap_sk)
@@ -124,17 +125,15 @@ class mainWindow(QMainWindow):
     def skeleton_restoration(self):
         SE  = cv2.getStructuringElement(cv2.MORPH_CROSS,(3,3))
         skeleton_res = np.zeros_like(self.img,dtype=np.uint8)
-        skeleton = cv2.imread('./image_to_show/skeleton.jpg', 0)
-        size = np.size(skeleton)
+        skeleton = self.sk
         stop_flag = False
         while(not stop_flag):
             dilated = cv2.dilate(skeleton,SE)
             closed = cv2.erode(dilated,SE)
             added = cv2.add(skeleton,closed)
-            skeleton_res = cv2.bitwise_and(skeleton_res,added)
+            skeleton_res = cv2.bitwise_or(skeleton_res,added)
             skeleton = dilated.copy()
-            num_nonzeros = size - cv2.countNonZero(skeleton)
-            if num_nonzeros == size:
+            if (cv2.countNonZero(skeleton_res) - cv2.countNonZero(self.img))  > 8e3:
                 stop_flag = True
         cv2.imwrite('./image_to_show/skeleton restoration.jpg', skeleton_res)
         pixmap_sk_res = QPixmap('./image_to_show/skeleton restoration.jpg')

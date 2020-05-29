@@ -118,6 +118,8 @@ class mainWindow(QMainWindow):
         self.t.show()
 
 def ui_main():
+    if not os.path.exists('image_to_show'):
+        os.mkdir('image_to_show')
     app = QApplication(sys.argv)
     w = mainWindow()
     w.show()

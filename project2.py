@@ -76,7 +76,7 @@ class mainWindow(QMainWindow):
 
         # 经典卷积核的选择
         self.cb = QComboBox(self)
-        self.cb.addItems(['Roberts1', 'Roberts2', 'Prewitt1', 'Prewitt2', 'Sobel1', 'Sobel2'])
+        self.cb.addItems(['Median','Gaussian', 'Roberts1', 'Roberts2', 'Prewitt1', 'Prewitt2', 'Sobel1', 'Sobel2'])
         self.cb.currentIndexChanged.connect(self.change_conv_filter)
         button_conv = QPushButton("conv", self)
         button_conv.setCheckable(True)
@@ -198,6 +198,26 @@ class mainWindow(QMainWindow):
             self.conv_number7.setText('-1')
             self.conv_number8.setText('0')
             self.conv_number9.setText('1')
+        elif self.cb.currentText() == 'Gaussian':
+            self.conv_number1.setText('0.0625')
+            self.conv_number2.setText('0.125')
+            self.conv_number3.setText('0.0625')
+            self.conv_number4.setText('0.125')
+            self.conv_number5.setText('0.25')
+            self.conv_number6.setText('0.125')
+            self.conv_number7.setText('0.0625')
+            self.conv_number8.setText('0.125')
+            self.conv_number9.setText('0.0625')
+        elif self.cb.currentText() == 'Median':
+            self.conv_number1.setText('0.')
+            self.conv_number2.setText('0.111')
+            self.conv_number3.setText('0.111')
+            self.conv_number4.setText('0.111')
+            self.conv_number5.setText('0.111')
+            self.conv_number6.setText('0.111')
+            self.conv_number7.setText('0.111')
+            self.conv_number8.setText('0.111')
+            self.conv_number9.setText('0.111')
             
 
 

@@ -6,6 +6,7 @@ import sys
 import os
 import cv2
 import numpy as np
+import skimage.morphology as sm
 
 class mainWindow(QMainWindow):
 
@@ -73,6 +74,7 @@ class mainWindow(QMainWindow):
     def openImage(self):
         self.img_name = QFileDialog.getOpenFileName(self, 'Choose Image File', '')[0]
         self.img = cv2.imread(self.img_name, 0)
+        res,self.img = cv2.threshold(self.img,0,255,cv2.THRESH_OTSU)
         self.img_shape = self.img.shape
         if self.img_shape[0]>300 or self.img_shape[1]>300:
             self.img = cv2.resize(self.img, (300, 300), interpolation=cv2.INTER_CUBIC)
@@ -99,42 +101,23 @@ class mainWindow(QMainWindow):
         dis_map = cv2.distanceTransform(self.img,distanceType=self.dis_type, maskSize=3)
         dis_map = np.uint8(dis_map)
         dis_map_norm = ((dis_map-dis_map.min())/(dis_map.max()-dis_map.min())*255).astype(np.uint8)
+        self.DT = dis_map_norm
 
         cv2.imwrite('./image_to_show/distance_transform.jpg', dis_map_norm)
         pixmap_dis_trans = QPixmap('./image_to_show/distance_transform.jpg')
         self.processed.setPixmap(pixmap_dis_trans)
 
     def skeleton(self):
-        SE = cv2.getStructuringElement(cv2.MORPH_CROSS,(3,3))
-        skeleton = np.zeros_like(self.img,dtype=np.uint8)
-        image = self.img
-        stop_flag = False
-        while(not stop_flag):
-            eroded = cv2.erode(image,SE)
-            opened = cv2.dilate(eroded,SE)
-            substracted = cv2.subtract(image,opened)
-            skeleton = cv2.bitwise_or(skeleton,substracted)
-            image = eroded.copy()
-            if cv2.countNonZero(image) == 0:
-                stop_flag = True
-        self.sk = skeleton
-        cv2.imwrite('./image_to_show/skeleton.jpg', skeleton)
+        skeleton,distance_transform  = sm.medial_axis(self.img, return_distance=True)
+        self.s_k = skeleton
+        self.Dis_Trans = distance_transform
+        cv2.imwrite('./image_to_show/skeleton.jpg', (255*skeleton).astype(np.uint8))
         pixmap_sk = QPixmap('./image_to_show/skeleton.jpg')
         self.processed.setPixmap(pixmap_sk)
-
+        
     def skeleton_restoration(self):
-        SE  = cv2.getStructuringElement(cv2.MORPH_CROSS,(3,3))
-        skeleton_res = np.zeros_like(self.img,dtype=np.uint8)
-        skeleton = self.sk
-        stop_flag = False
-        while(not stop_flag):
-            dilated = cv2.dilate(skeleton,SE)
-            closed = cv2.erode(dilated,SE)
-            added = cv2.add(skeleton,closed)
-            skeleton_res = cv2.bitwise_or(skeleton_res,added)
-            skeleton = dilated.copy()
-            if (cv2.countNonZero(skeleton_res) - cv2.countNonZero(self.img))  > 8e3:
-                stop_flag = True
+        self.distance()
+        skeleton_res = 255*sm.reconstruction(self.s_k,self.Dis_Trans).astype(np.uint8)
         cv2.imwrite('./image_to_show/skeleton restoration.jpg', skeleton_res)
         pixmap_sk_res = QPixmap('./image_to_show/skeleton restoration.jpg')
         self.processed.setPixmap(pixmap_sk_res)

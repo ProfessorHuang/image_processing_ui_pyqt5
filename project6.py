@@ -1,14 +1,14 @@
 from PyQt5.QtWidgets import (QMainWindow, QWidget, QFileDialog, QApplication, QLineEdit, QLabel, QComboBox,
                              QHBoxLayout, QVBoxLayout, QPushButton, QSlider, QLineEdit)
 
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import (QPixmap,QImage)
 from PyQt5.QtCore import Qt
 import sys
 import os
 import cv2 as cv
 import math
 import numpy as np
-
+from time import sleep
 
 class mainWindow(QMainWindow):
 
@@ -21,6 +21,14 @@ class mainWindow(QMainWindow):
         openButton = QPushButton("Open", self)
         openButton.setCheckable(True)
         openButton.clicked[bool].connect(self.openImage)
+        #选择marker的按钮
+        marker = QPushButton("Choose Marker", self)
+        marker.setCheckable(True)
+        marker.clicked[bool].connect(self.choosemarker)
+        #选择模板的按钮
+        template = QPushButton("Choose Template", self)
+        template.setCheckable(True)
+        template.clicked[bool].connect(self.choosetemplate)
 
         # 图像区域
         self.source_image = QLabel(self)
@@ -42,16 +50,15 @@ class mainWindow(QMainWindow):
 
         # 图像窗口和文字的水平布局
         hbox_image = QHBoxLayout(self)
-        hbox_image_txt = QHBoxLayout(self)
         hbox_image.addWidget(self.source_image)
         hbox_image.addWidget(self.openclose)
+        hbox_image_txt = QHBoxLayout(self)
         hbox_image_txt.addWidget(source_image_txt)
         hbox_image_txt.addWidget(openclose_txt)
-
         hbox_image2 = QHBoxLayout(self)
-        hbox_image_txt2 = QHBoxLayout(self)
         hbox_image2.addWidget(self.edge)
         hbox_image2.addWidget(self.gradient)
+        hbox_image_txt2 = QHBoxLayout(self)
         hbox_image_txt2.addWidget(edge_txt)
         hbox_image_txt2.addWidget(gradient_txt)
         # 容纳水平布局的垂直布局vbox_image
@@ -61,6 +68,9 @@ class mainWindow(QMainWindow):
         vbox_image2 = QVBoxLayout(self)
         vbox_image2.addLayout(hbox_image_txt2, stretch=1)
         vbox_image2.addLayout(hbox_image2, stretch=6)
+        boximage = QVBoxLayout(self)
+        boximage.addLayout(vbox_image)
+        boximage.addLayout(vbox_image2)
 
         # 灰度形态学处理方法的选择区域
 
@@ -78,14 +88,14 @@ class mainWindow(QMainWindow):
         self.shp.addItems(['rectangle', 'cross', 'ellipse'])
         self.shp.currentIndexChanged.connect(self.setkernelshape)
         self.opt = QComboBox(self)
-        self.opt.addItems(['dilation', 'erosion', 'opening','closing','edge detection','inner gradient','outer gradient','CBR','OBR'])
+        self.opt.addItems(['dilation', 'erosion', 'opening','closing','edge detection','inner gradient','outer gradient','CBR','OBR','conditional dilation'])
         # 进行操作的按钮
         button_conv = QPushButton("go", self)
         button_conv.setCheckable(True)
         button_conv.clicked[bool].connect(self.conv)
 
         # 创建选择框和按钮的两个水平布局
-        hbox_SEinfo = QHBoxLayout(self)
+        hbox_SEinfo = QVBoxLayout(self)
         hbox_SEinfo.addWidget(self.opt)
         hbox_SEinfo.addWidget(self.shp)
         hbox_SEinfo.addWidget(self.kernel_size)
@@ -94,28 +104,34 @@ class mainWindow(QMainWindow):
         hbox_SEinfo.setStretchFactor(self.opt, 1);
         hbox_SEinfo.setStretchFactor(self.kernel_size, 2);
         hbox_SEinfo.setStretchFactor(self.aEdit, 1);
-        hbox_gobuttion = QHBoxLayout(self)
+        hbox_gobuttion = QVBoxLayout(self)
         hbox_gobuttion.addWidget(button_conv)
+        hbox_gobuttion.addWidget(marker)
+        hbox_gobuttion.addWidget(template)
+        
+        hboxright = QVBoxLayout(self)
+        hboxright.addSpacing(150)
+        hboxright.addWidget(openButton,1)
+        hboxright.addLayout(hbox_SEinfo,4)
+        hboxright.addLayout(hbox_gobuttion,3)
 
         # 最终整体的布局
-        vbox = QVBoxLayout(self)
-        vbox.addWidget(openButton)
-        vbox.addLayout(vbox_image)
-        vbox.addLayout(vbox_image2)
-        vbox.addLayout(hbox_SEinfo)
-        vbox.addLayout(hbox_gobuttion)
+        hbox = QHBoxLayout(self)
+        hbox.addLayout(boximage, stretch = 6)
+        hbox.addLayout(hboxright, stretch = 1)
+
         # 定义一个Widget，用来容纳整体的布局内容
         widget = QWidget()
-        widget.setLayout(vbox)
+        widget.setLayout(hbox)
         self.setCentralWidget(widget)
         #整个窗口大小
-        self.setGeometry(700, 200, 700, 700)
-        self.setWindowTitle('Project5')
+        self.setGeometry(700, 200, 1400, 700)
+        self.setWindowTitle('Greyscale Morphological')
         self.show()
 
         # 需要初始化的内容：一些self成员
         self.img_name = ''              #初始化图像名
-        self.img_shape = (300, 300)     #初始化图形尺寸
+        self.img_shape = (500, 327)     #初始化图形尺寸
         self.morphtype = cv.MORPH_RECT  #初始化结构元形状
         #self.kernelsize = int(self.kernel_size.value())                                  # 核大小
         #self.kernel = cv.getStructuringElement(self.morphtype,(kernelsize,kernelsize))   # 核形状
@@ -125,16 +141,42 @@ class mainWindow(QMainWindow):
         self.img_name = QFileDialog.getOpenFileName(self, 'Choose Image File', '')[0]
         img = cv.imread(self.img_name, 0)
         self.img_shape = img.shape
-        if self.img_shape[0]>300 or self.img_shape[1]>300:
-            img = cv.resize(img, (300, 300), interpolation=cv.INTER_CUBIC)
-            self.img_shape = (300, 300)
+        if self.img_shape[0]>500 or self.img_shape[1]>327:
+            img = cv.resize(img, (500, 327), interpolation=cv.INTER_CUBIC)
+            self.img_shape = (500, 327)
         cv.imwrite('./image_to_show/source.jpg', img)
-        pixmap_source = QPixmap('./image_to_show/source.jpg')
-        self.source_image.setPixmap(pixmap_source)
+        marker = QPixmap('./image_to_show/source.jpg')
+        self.source_image.setPixmap(marker)
                        
+        # 读取marker图像
+    def choosemarker(self):
+        self.markerimg_name = QFileDialog.getOpenFileName(self, 'Choose Image File', '')[0]
+        markerimg = cv.imread(self.markerimg_name, 0)
+        self.markerimg_shape = markerimg.shape
+        if self.markerimg_shape[0]>500 or self.markerimg_shape[1]>500:
+            markerimg = cv.resize(markerimg, (500, 500), interpolation=cv.INTER_CUBIC)
+            self.markerimg_shape = (500, 500)
+        cv.imwrite('./image_to_show/marker.jpg', markerimg)
+        markermap = QPixmap('./image_to_show/marker.jpg')
+        self.gradient.setPixmap(markermap)
+
+        # 读取模板图像
+    def choosetemplate(self):
+        self.templateimg_name = QFileDialog.getOpenFileName(self, 'Choose Image File', '')[0]
+        templateimg = cv.imread(self.templateimg_name, 0)
+        self.templateimg_shape = templateimg.shape
+        if self.templateimg_shape[0]>500 or self.templateimg_shape[1]>500:
+            templateimg = cv.resize(templateimg, (500, 500), interpolation=cv.INTER_CUBIC)
+            self.templateimg_shape = (500, 500)
+        cv.imwrite('./image_to_show/template.jpg', templateimg)
+        templatemap = QPixmap('./image_to_show/template.jpg')
+        self.edge.setPixmap(templatemap)
+
         # 进行灰度形态学操作
     def conv(self):
         img = cv.imread('./image_to_show/source.jpg', 0)
+        markerimg = cv.imread('./image_to_show/marker.jpg', 0)
+        templateimg = cv.imread('./image_to_show/template.jpg', 0)
         kernelsize = int(self.kernel_size.value())                                  # 核大小
         kernel = cv.getStructuringElement(self.morphtype,(kernelsize,kernelsize))   # 核形状
         #进行不同的操作
@@ -180,17 +222,26 @@ class mainWindow(QMainWindow):
             pixmap = QPixmap('./image_to_show/gradient.jpg')
             self.gradient.setPixmap(pixmap)
         elif self.opt.currentText() == 'OBR':
-            result = self.O_R(3,img,kernel)
+            result = self.O_R(kernelsize,img,cv.getStructuringElement(self.morphtype,(5,5)))
             cv.imwrite("./image_to_show/recon.jpg", result)
             pixmap = QPixmap('./image_to_show/recon.jpg')
             self.openclose.setPixmap(pixmap)
         elif self.opt.currentText() == 'CBR':
-            result = self.C_R(3,img,kernel)
+            result = self.C_R(kernelsize,img,cv.getStructuringElement(self.morphtype,(5,5)))
             cv.imwrite("./image_to_show/recon.jpg", result)
             pixmap = QPixmap('./image_to_show/recon.jpg')
             self.openclose.setPixmap(pixmap)
+        elif self.opt.currentText() == 'conditional dilation':
+            result = markerimg
+            for num in range(1,500):
+                result = cv.dilate(result,cv.getStructuringElement(self.morphtype,(3,3)) )
+                result  = result&templateimg
+
+            cv.imwrite("./image_to_show/conditinoal_dilation.jpg", result)
+            pixmap = QPixmap('./image_to_show/conditinoal_dilation.jpg')
+            self.openclose.setPixmap(pixmap)
 #####################################################################################################
-#times是重复腐蚀膨胀的次数；f是输入的图像；b是结构元
+#times是重复腐蚀膨胀的次数；f\g是输入的图像；b是结构元
 #####################################################################################################
         #　测地膨胀
     def D_g(self,times,f,b,g):
@@ -213,6 +264,7 @@ class mainWindow(QMainWindow):
         img = f
         while True:
             new = self.D_g(1,img,b,g)
+
             if (new==img).all():
                 return img
             img = new
@@ -222,6 +274,7 @@ class mainWindow(QMainWindow):
         img = f
         while True:
             new = self.E_g(1,img,b,g)
+
             if (new==img).all():
                 return img
             img = new
@@ -263,3 +316,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = mainWindow()
     sys.exit(app.exec_())
+

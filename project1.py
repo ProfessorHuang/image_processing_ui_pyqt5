@@ -23,14 +23,6 @@ class mainWindow(QMainWindow):
         self.lbl_autoThres.setAlignment(Qt.AlignCenter)
         self.lbl_manualThres = QLabel(self)
         self.lbl_manualThres.setAlignment(Qt.AlignCenter)
-        lbl_source_txt = QLabel('Source Image', self)
-        lbl_source_txt.setAlignment(Qt.AlignCenter)
-        lbl_hist_txt = QLabel('Histogram', self)
-        lbl_hist_txt.setAlignment(Qt.AlignCenter)
-        lbl_autoThres_txt = QLabel('Auto Thres', self)
-        lbl_autoThres_txt.setAlignment(Qt.AlignCenter)
-        lbl_manualThres_txt = QLabel('Manual Thres', self)
-        lbl_manualThres_txt.setAlignment(Qt.AlignCenter)
 
         openButton = QPushButton("Open", self)
         openButton.setCheckable(True)
@@ -53,50 +45,36 @@ class mainWindow(QMainWindow):
         autoThresButton = QPushButton("auto", self)
         autoThresButton.setCheckable(True)
         autoThresButton.clicked[bool].connect(self.autoThres)
-
-
-
-
-
+   
         hbox1 = QHBoxLayout(self)
-        hbox1.addWidget(lbl_source_txt)
-        hbox1.addWidget(lbl_hist_txt)
+        hbox1.addWidget(self.lbl_source)
+        hbox1.addWidget(self.lbl_hist)
 
         hbox2 = QHBoxLayout(self)
-        hbox2.addWidget(self.lbl_source)
-        hbox2.addWidget(self.lbl_hist)
+        hbox2.addWidget(self.lbl_autoThres)
+        hbox2.addWidget(self.lbl_manualThres)
 
         hbox3 = QHBoxLayout(self)
-        hbox3.addWidget(lbl_autoThres_txt)
-        hbox3.addWidget(lbl_manualThres_txt)
-
-        hbox4 = QHBoxLayout(self)
-        hbox4.addWidget(self.lbl_autoThres)
-        hbox4.addWidget(self.lbl_manualThres)
-
-        hbox5 = QHBoxLayout(self)
-        hbox5.addWidget(openButton)
-        hbox5.addStretch(1)
-        hbox5.addWidget(self.cb)
-        hbox5.addWidget(autoThresButton)
-        hbox5.addStretch(1)
-        hbox5.addWidget(self.sld)
-        hbox5.addWidget(self.aEdit)
-        hbox5.addWidget(thresButton)
+        hbox3.addWidget(openButton)
+        hbox3.addStretch(1)
+        hbox3.addWidget(self.cb)
+        hbox3.addWidget(autoThresButton)
+        hbox3.addStretch(1)
+        hbox3.addWidget(self.sld)
+        hbox3.addWidget(self.aEdit)
+        hbox3.addWidget(thresButton)
 
         vbox = QVBoxLayout(self)
-        vbox.addLayout(hbox1, stretch=1)
-        vbox.addLayout(hbox2, stretch=6)
-        vbox.addLayout(hbox3, stretch=1)
-        vbox.addLayout(hbox4, stretch=6)
-        vbox.addLayout(hbox5, stretch=1)
+        vbox.addLayout(hbox1)
+        vbox.addLayout(hbox2)
+        vbox.addLayout(hbox3)
 
         widget = QWidget()
         widget.setLayout(vbox)
         self.setCentralWidget(widget)
 
         self.setGeometry(700, 200, 700, 700)
-        self.setWindowTitle('Project1')
+        self.setWindowTitle('直方图与阈值化')
         self.show()
 
         self.img_name = ''
@@ -112,8 +90,8 @@ class mainWindow(QMainWindow):
         cv.imwrite('./image_to_show/source.jpg', img)
 
         hist = cv.calcHist([img], [0], None, [256], [0, 256])
-        plt.figure()
-        plt.plot(hist)
+        plt.figure(figsize=(3, 3))
+        plt.hist(hist, bins=100, color='black')
         plt.xlim([0, 256])
         plt.savefig('./image_to_show/hist.png')
         img_hist = cv.imread('./image_to_show/hist.png')
@@ -215,3 +193,4 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = mainWindow()
     sys.exit(app.exec_())
+

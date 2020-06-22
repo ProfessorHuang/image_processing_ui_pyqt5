@@ -25,45 +25,55 @@ class mainWindow(QMainWindow):
 
     def init_ui(self):
         self.resize(300, 200)
-        self.setWindowTitle('image_processing_ui')
+        self.setWindowTitle('图像处理界面')
 
         self.btn_1 = QPushButton(self)
-        self.btn_1.setText('project1')
+        self.btn_1.setText('直方图与阈值化')
         self.btn_1.clicked.connect(self.slot_btn_1)
         self.sig_1.connect(self.sig_1_slot)
 
         self.btn_2 = QPushButton(self)
-        self.btn_2.setText('project2')
+        self.btn_2.setText('卷积操作')
         self.btn_2.clicked.connect(self.slot_btn_2)
         self.sig_2.connect(self.sig_2_slot)
 
         self.btn_3 = QPushButton(self)
-        self.btn_3.setText('project3')
+        self.btn_3.setText('二值形态学基础')
         self.btn_3.clicked.connect(self.slot_btn_3)
         self.sig_3.connect(self.sig_3_slot)
 
         self.btn_4 = QPushButton(self)
-        self.btn_4.setText('project4')
+        self.btn_4.setText('二值形态学高级')
         self.btn_4.clicked.connect(self.slot_btn_4)
         self.sig_4.connect(self.sig_4_slot)
 
         self.btn_5 = QPushButton(self)
-        self.btn_5.setText('project5')
+        self.btn_5.setText('灰度形态学基础')
         self.btn_5.clicked.connect(self.slot_btn_5)
         self.sig_5.connect(self.sig_5_slot)
 
         self.btn_6 = QPushButton(self)
-        self.btn_6.setText('project6')
+        self.btn_6.setText('灰度形态学高级')
         self.btn_6.clicked.connect(self.slot_btn_6)
         self.sig_6.connect(self.sig_6_slot)
 
+        hbox1 = QHBoxLayout(self)
+        hbox1.addWidget(self.btn_1)
+        hbox1.addWidget(self.btn_2)
+
+        hbox2 = QHBoxLayout(self)
+        hbox2.addWidget(self.btn_3)
+        hbox2.addWidget(self.btn_4)
+
+        hbox3 = QHBoxLayout(self)
+        hbox3.addWidget(self.btn_5)
+        hbox3.addWidget(self.btn_6)
+
+
         vbox = QVBoxLayout(self)
-        vbox.addWidget(self.btn_1)
-        vbox.addWidget(self.btn_2)
-        vbox.addWidget(self.btn_3)
-        vbox.addWidget(self.btn_4)
-        vbox.addWidget(self.btn_5)
-        vbox.addWidget(self.btn_6)
+        vbox.addLayout(hbox1)
+        vbox.addLayout(hbox2)
+        vbox.addLayout(hbox3)
 
         widget = QWidget()
         widget.setLayout(vbox)

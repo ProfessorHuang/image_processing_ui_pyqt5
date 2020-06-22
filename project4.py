@@ -17,14 +17,10 @@ class mainWindow(QMainWindow):
     def initUI(self):
         self.source = QLabel(self)
         self.source.setAlignment(Qt.AlignCenter)
-        source_txt = QLabel('Source Image', self)
-        source_txt.setAlignment(Qt.AlignCenter)
 
         self.processed = QLabel(self)
         self.processed.setAlignment(Qt.AlignCenter)
-        processed_txt = QLabel('Processed Image', self)
-        processed_txt.setAlignment(Qt.AlignCenter)
-
+    
         openButton = QPushButton("Open Image", self)
         openButton.setCheckable(True)
         openButton.clicked[bool].connect(self.openImage)
@@ -40,32 +36,27 @@ class mainWindow(QMainWindow):
         self.opt.addItems(['distance transform','skeleton','skeleton restoration'])
 
         hbox1 = QHBoxLayout(self)
-        hbox1.addWidget(openButton)
-        hbox1.addWidget(exeButton)
+        hbox1.addWidget(self.source)
+        hbox1.addWidget(self.processed)
 
         hbox2 = QHBoxLayout(self)
         hbox2.addWidget(self.opt)
         hbox2.addWidget(self.distanceType)
 
         hbox3 = QHBoxLayout(self)
-        hbox3.addWidget(source_txt)
-        hbox3.addWidget(processed_txt)
-
-        hbox4 = QHBoxLayout(self)
-        hbox4.addWidget(self.source)
-        hbox4.addWidget(self.processed)
+        hbox3.addWidget(openButton)
+        hbox3.addWidget(exeButton)
 
         vbox = QVBoxLayout(self)
-        vbox.addLayout(hbox1,stretch=1)
+        vbox.addLayout(hbox1,stretch=6)
         vbox.addLayout(hbox2,stretch=1)
         vbox.addLayout(hbox3,stretch=1)
-        vbox.addLayout(hbox4,stretch=6)
         widget = QWidget()
         widget.setLayout(vbox)
         self.setCentralWidget(widget)
 
-        self.setGeometry(700, 200, 700, 500)
-        self.setWindowTitle('Project 4')
+        self.setGeometry(700, 200, 560, 500)
+        self.setWindowTitle('二值形态学高级')
         self.show()
 
         self.img_name = ''
@@ -116,7 +107,7 @@ class mainWindow(QMainWindow):
         self.processed.setPixmap(pixmap_sk)
         
     def skeleton_restoration(self):
-        self.distance()
+        self.distance_transform()
         skeleton_res = 255*sm.reconstruction(self.s_k,self.Dis_Trans).astype(np.uint8)
         cv2.imwrite('./image_to_show/skeleton restoration.jpg', skeleton_res)
         pixmap_sk_res = QPixmap('./image_to_show/skeleton restoration.jpg')

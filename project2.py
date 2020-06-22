@@ -27,25 +27,25 @@ class mainWindow(QMainWindow):
         self.source_image.setAlignment(Qt.AlignCenter)
         self.feature_map = QLabel(self)
         self.feature_map.setAlignment(Qt.AlignCenter)
-        source_image_txt = QLabel('Source Image', self)
-        source_image_txt.setAlignment(Qt.AlignCenter)
-        feature_map_txt = QLabel('After Convolution', self)
-        feature_map_txt.setAlignment(Qt.AlignCenter)
+        # source_image_txt = QLabel('Source Image', self)
+        # source_image_txt.setAlignment(Qt.AlignCenter)
+        # feature_map_txt = QLabel('After Convolution', self)
+        # feature_map_txt.setAlignment(Qt.AlignCenter)
         hbox_image = QHBoxLayout(self)
-        hbox_image_txt = QHBoxLayout(self)
+        # hbox_image_txt = QHBoxLayout(self)
         hbox_image.addWidget(self.source_image)
         hbox_image.addWidget(self.feature_map)
-        hbox_image_txt.addWidget(source_image_txt)
-        hbox_image_txt.addWidget(feature_map_txt)
+        # hbox_image_txt.addWidget(source_image_txt)
+        # hbox_image_txt.addWidget(feature_map_txt)
 
-        vbox_image = QVBoxLayout(self)
-        vbox_image.addLayout(hbox_image_txt, stretch=1)
-        vbox_image.addLayout(hbox_image, stretch=6)
+        # vbox_image = QVBoxLayout(self)
+        # vbox_image.addLayout(hbox_image_txt, stretch=1)
+        # vbox_image.addLayout(hbox_image, stretch=6)
 
 
 
         # 卷积核的输入区域，大小为3×3，最终放在vbox_conv中
-        self.conv_number1 = QLineEdit('0.11', self)  #  默认值设置为0.33
+        self.conv_number1 = QLineEdit('0.11', self) 
         self.conv_number2 = QLineEdit('0.11', self)
         self.conv_number3 = QLineEdit('0.11', self)
         self.conv_number4 = QLineEdit('0.11', self)
@@ -83,14 +83,14 @@ class mainWindow(QMainWindow):
         button_conv.clicked[bool].connect(self.conv)
         
         hbox_select_conv = QHBoxLayout(self)
+        hbox_select_conv.addWidget(openButton)
         hbox_select_conv.addWidget(self.cb)
         hbox_select_conv.addWidget(button_conv)
 
 
         # 最终整体的布局
         vbox = QVBoxLayout(self)
-        vbox.addWidget(openButton)
-        vbox.addLayout(vbox_image)
+        vbox.addLayout(hbox_image)
         vbox.addLayout(vbox_conv)
         vbox.addLayout(hbox_select_conv)
 
@@ -100,8 +100,8 @@ class mainWindow(QMainWindow):
 
     
 
-        self.setGeometry(700, 200, 700, 700)
-        self.setWindowTitle('Project2')
+        self.setGeometry(700, 200, 560, 500)
+        self.setWindowTitle('卷积')
         self.show()
 
         self.img_name = ''

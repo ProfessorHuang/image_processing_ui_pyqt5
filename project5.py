@@ -26,22 +26,12 @@ class mainWindow(QMainWindow):
         self.source_image.setAlignment(Qt.AlignCenter)
         self.openclose = QLabel(self)
         self.openclose.setAlignment(Qt.AlignCenter)
-        source_image_txt = QLabel('Source Image', self)
-        source_image_txt.setAlignment(Qt.AlignCenter)
-        openclose_txt = QLabel('After Open or Close', self)
-        openclose_txt.setAlignment(Qt.AlignCenter)
 
-        # 图像窗口和文字的两个水平布局
+        # 图像窗口的水平布局
         hbox_image = QHBoxLayout(self)
-        hbox_image_txt = QHBoxLayout(self)
         hbox_image.addWidget(self.source_image)
         hbox_image.addWidget(self.openclose)
-        hbox_image_txt.addWidget(source_image_txt)
-        hbox_image_txt.addWidget(openclose_txt)
-        # 容纳水平布局的垂直布局vbox_image
-        vbox_image = QVBoxLayout(self)
-        vbox_image.addLayout(hbox_image_txt, stretch=1)
-        vbox_image.addLayout(hbox_image, stretch=6)
+        
 
         # 灰度形态学处理方法的选择区域
 
@@ -61,7 +51,7 @@ class mainWindow(QMainWindow):
         self.opt = QComboBox(self)
         self.opt.addItems(['dilation', 'erosion', 'opening','closing'])
         # 进行操作的按钮
-        button_conv = QPushButton("go", self)
+        button_conv = QPushButton("execute", self)
         button_conv.setCheckable(True)
         button_conv.clicked[bool].connect(self.conv)
 
@@ -71,22 +61,22 @@ class mainWindow(QMainWindow):
         hbox_SEinfo.addWidget(self.opt)
         hbox_SEinfo.addWidget(self.kernel_size)
         hbox_SEinfo.addWidget(self.aEdit)
-        hbox_gobuttion = QHBoxLayout(self)
-        hbox_gobuttion.addWidget(button_conv)
+        hbox_last = QHBoxLayout(self)
+        hbox_last.addWidget(openButton)
+        hbox_last.addWidget(button_conv)
 
         # 最终整体的布局
         vbox = QVBoxLayout(self)
-        vbox.addWidget(openButton)
-        vbox.addLayout(vbox_image)
+        vbox.addLayout(hbox_image)
         vbox.addLayout(hbox_SEinfo)
-        vbox.addLayout(hbox_gobuttion)
+        vbox.addLayout(hbox_last)
         # 定义一个Widget，用来容纳整体的布局内容
         widget = QWidget()
         widget.setLayout(vbox)
         self.setCentralWidget(widget)
         #整个窗口大小
-        self.setGeometry(700, 200, 700, 700)
-        self.setWindowTitle('Project5')
+        self.setGeometry(700, 200, 560, 500)
+        self.setWindowTitle('灰度形态学基础')
         self.show()
 
         # 需要初始化的内容：一些self成员

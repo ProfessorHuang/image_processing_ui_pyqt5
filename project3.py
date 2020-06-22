@@ -15,29 +15,21 @@ class mainWindow(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        self.source = QLabel(self)
-        self.source.setAlignment(Qt.AlignCenter)
-        source_txt = QLabel('Source Image', self)
-        source_txt.setAlignment(Qt.AlignCenter)
+        # self.source = QLabel(self)
+        # self.source.setAlignment(Qt.AlignCenter)
+        # source_txt = QLabel('Source Image', self)
+        # source_txt.setAlignment(Qt.AlignCenter)
 
         self.binary = QLabel(self)
         self.binary.setAlignment(Qt.AlignCenter)
-        binary_txt = QLabel('Binary Image', self)
-        binary_txt.setAlignment(Qt.AlignCenter)
 
         self.processed = QLabel(self)
         self.processed.setAlignment(Qt.AlignCenter)
-        processed_txt = QLabel('Processed Image', self)
-        processed_txt.setAlignment(Qt.AlignCenter)
 
 
         openButton = QPushButton("Open Image", self)
         openButton.setCheckable(True)
         openButton.clicked[bool].connect(self.openImage)
-
-        thresholdButton = QPushButton("Threshold", self)
-        thresholdButton.setCheckable(True)
-        thresholdButton.clicked[bool].connect(self.threshold)
 
         exeButton = QPushButton("Execute", self)
         exeButton.setCheckable(True)
@@ -62,9 +54,8 @@ class mainWindow(QMainWindow):
         self.opt.addItems(['dilation', 'erosion', 'opening', 'closing'])
 
         hbox1 = QHBoxLayout(self)
-        hbox1.addWidget(openButton)
-        hbox1.addWidget(thresholdButton)
-        hbox1.addWidget(exeButton)
+        hbox1.addWidget(self.binary)
+        hbox1.addWidget(self.processed)
 
         hbox2 = QHBoxLayout(self)
         hbox2.addWidget(self.kernel_shape, Qt.AlignLeft)
@@ -73,27 +64,20 @@ class mainWindow(QMainWindow):
         hbox2.addWidget(self.ksEditor, Qt.AlignRight)
 
         hbox3 = QHBoxLayout(self)
-        hbox3.addWidget(source_txt)
-        hbox3.addWidget(binary_txt)
-        hbox3.addWidget(processed_txt)
-
-        hbox4 = QHBoxLayout(self)
-        hbox4.addWidget(self.source)
-        hbox4.addWidget(self.binary)
-        hbox4.addWidget(self.processed)
+        hbox3.addWidget(openButton)
+        hbox3.addWidget(exeButton)
 
 
         vbox = QVBoxLayout(self)
-        vbox.addLayout(hbox1,stretch=1)
-        vbox.addLayout(hbox2,stretch=1)
-        vbox.addLayout(hbox3,stretch=1)
-        vbox.addLayout(hbox4,stretch=6)
+        vbox.addLayout(hbox1)
+        vbox.addLayout(hbox2)
+        vbox.addLayout(hbox3)
         widget = QWidget()
         widget.setLayout(vbox)
         self.setCentralWidget(widget)
 
-        self.setGeometry(700, 200, 1000, 500)
-        self.setWindowTitle('Project 3')
+        self.setGeometry(700, 200, 560, 500)
+        self.setWindowTitle('二值形态学基础')
         self.show()
 
         self.img_name = ''
@@ -108,10 +92,6 @@ class mainWindow(QMainWindow):
             self.img_shape = (300, 300)
         cv2.imwrite('./image_to_show/source.jpg', self.img)
 
-        pixmap_source = QPixmap('./image_to_show/source.jpg')
-        self.source.setPixmap(pixmap_source)
-
-    def threshold(self):
         ret, thr = cv2.threshold(self.img, 0, 255, cv2.THRESH_OTSU)
         self.binary_img = thr
         cv2.imwrite('./image_to_show/thr.jpg', thr)
